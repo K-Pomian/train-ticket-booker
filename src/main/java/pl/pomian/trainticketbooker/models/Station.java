@@ -1,32 +1,29 @@
 package pl.pomian.trainticketbooker.models;
 
+import jakarta.persistence.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Document
+@Entity
+@Table(name = "stations")
 public class Station {
 
+    @jakarta.persistence.Id
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
+
+    @OneToMany(mappedBy = "from")
     private Set<StationConnection> connectedTo;
 
-    public Station() {
-    }
-
-    public Station(String name) {
-        this.name = name;
-        this.connectedTo = new HashSet<>();
-    }
-
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

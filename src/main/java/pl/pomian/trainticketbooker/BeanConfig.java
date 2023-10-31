@@ -10,6 +10,7 @@ import pl.pomian.trainticketbooker.models.Station;
 import pl.pomian.trainticketbooker.models.StationDto;
 import pl.pomian.trainticketbooker.repositories.StationRepository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -26,23 +27,19 @@ public class BeanConfig {
 
     @Bean
     public Graph<StationDto, DefaultWeightedEdge> getStationsGraph() {
-        Map<String, Station> stations =
-                stationRepository.findAll().stream().collect(Collectors.toMap(Station::getId, Function.identity()));
+        List<Station> stations = stationRepository.findAll();
         SimpleWeightedGraph<StationDto, DefaultWeightedEdge> graph =
                 new SimpleWeightedGraph<>(null, DefaultWeightedEdge::new);
 
-        stations.forEach((id, station) -> {
+        stations.forEach(station -> {
             StationDto fromStation = StationDto.fromStation(station);
             graph.addVertex(fromStation);
 
             station.getConnectedTo().forEach(connection -> {
-                StationDto toStation = StationDto.fromStation(stations.get(connection.getToId()));
+                StationDto toStation = StationDto.fromStation(connection.getTo());
 
                 if (!graph.containsEdge(fromStation, toStation)) {
-                    DefaultWeightedEdge edge = graph.addEdge(
-                            StationDto.fromStation(station),
-                            StationDto.fromStation(stations.get(connection.getToId()))
-                    );
+                    DefaultWeightedEdge edge = graph.addEdge(fromStation, toStation);
                     graph.setEdgeWeight(edge, connection.getWeight().doubleValue());
                 }
             });

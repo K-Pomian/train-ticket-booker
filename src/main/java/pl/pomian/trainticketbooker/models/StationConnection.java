@@ -1,26 +1,47 @@
 package pl.pomian.trainticketbooker.models;
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 
+@Entity
+@Table(name = "station_connections")
 public class StationConnection {
 
-    private String toId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @ManyToOne
+    private Station from;
+    @ManyToOne
+    private Station to;
     private BigDecimal weight;
 
     public StationConnection() {
     }
 
-    public StationConnection(String toId, BigDecimal weight) {
-        this.toId = toId;
-        this.weight = weight;
+    public Long getId() {
+        return id;
     }
 
-    public String getToId() {
-        return toId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setToId(String toId) {
-        this.toId = toId;
+    public Station getTo() {
+        return to;
+    }
+
+    public void setTo(Station toId) {
+        this.to = toId;
+    }
+
+    public Station getFrom() {
+        return from;
+    }
+
+    public void setFrom(Station from) {
+        this.from = from;
     }
 
     public BigDecimal getWeight() {
