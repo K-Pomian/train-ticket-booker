@@ -19,7 +19,7 @@ public class Booking {
     private Station stationTo;
     private BigDecimal price;
     private Discount discount;
-    private Short carrage;
+    private Short carriage;
     private Short seat;
     private LocalDateTime travelTime;
     private LocalDateTime bookingTime;
@@ -64,12 +64,12 @@ public class Booking {
         this.discount = discount;
     }
 
-    public Short getCarrage() {
-        return carrage;
+    public Short getCarriage() {
+        return carriage;
     }
 
-    public void setCarrage(Short carrage) {
-        this.carrage = carrage;
+    public void setCarriage(Short carriage) {
+        this.carriage = carriage;
     }
 
     public Short getSeat() {
