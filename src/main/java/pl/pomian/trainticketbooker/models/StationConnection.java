@@ -2,8 +2,6 @@ package pl.pomian.trainticketbooker.models;
 
 import jakarta.persistence.*;
 
-import java.math.BigDecimal;
-
 @Entity
 @Table(name = "station_connections")
 public class StationConnection {
@@ -15,10 +13,8 @@ public class StationConnection {
     private Station from;
     @ManyToOne
     private Station to;
-    private BigDecimal weight;
-
-    public StationConnection() {
-    }
+    private Integer timeWeight;
+    private Integer priceWeight;
 
     public Long getId() {
         return id;
@@ -44,11 +40,19 @@ public class StationConnection {
         this.from = from;
     }
 
-    public BigDecimal getWeight() {
-        return weight;
+    public Integer getTimeWeight() {
+        return timeWeight;
     }
 
-    public void setWeight(BigDecimal weight) {
-        this.weight = weight;
+    public void setTimeWeight(Integer timeWeight) {
+        this.timeWeight = timeWeight;
+    }
+
+    public Integer getPriceWeight() {
+        return priceWeight;
+    }
+
+    public void setPriceWeight(Integer priceWeight) {
+        this.priceWeight = priceWeight;
     }
 }

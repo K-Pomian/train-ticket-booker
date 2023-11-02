@@ -26,7 +26,7 @@ public class BeanConfig {
     }
 
     @Bean
-    public Graph<StationDto, DefaultWeightedEdge> getStationsGraph() {
+    public Graph<StationDto, DefaultWeightedEdge> getStationsTimeGraph() {
         List<Station> stations = stationRepository.findAll();
         SimpleWeightedGraph<StationDto, DefaultWeightedEdge> graph =
                 new SimpleWeightedGraph<>(null, DefaultWeightedEdge::new);
@@ -40,7 +40,30 @@ public class BeanConfig {
 
                 if (!graph.containsEdge(fromStation, toStation)) {
                     DefaultWeightedEdge edge = graph.addEdge(fromStation, toStation);
-                    graph.setEdgeWeight(edge, connection.getWeight().doubleValue());
+                    graph.setEdgeWeight(edge, connection.getTimeWeight().doubleValue());
+                }
+            });
+        });
+
+        return graph;
+    }
+
+    @Bean
+    public Graph<StationDto, DefaultWeightedEdge> getStationsPriceGraph() {
+        List<Station> stations = stationRepository.findAll();
+        SimpleWeightedGraph<StationDto, DefaultWeightedEdge> graph =
+                new SimpleWeightedGraph<>(null, DefaultWeightedEdge::new);
+
+        stations.forEach(station -> {
+            StationDto fromStation = StationDto.fromStation(station);
+            graph.addVertex(fromStation);
+
+            station.getConnectedTo().forEach(connection -> {
+                StationDto toStation = StationDto.fromStation(connection.getTo());
+
+                if (!graph.containsEdge(fromStation, toStation)) {
+                    DefaultWeightedEdge edge = graph.addEdge(fromStation, toStation);
+                    graph.setEdgeWeight(edge, connection.getPriceWeight().doubleValue());
                 }
             });
         });
