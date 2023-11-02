@@ -1,16 +1,13 @@
 package pl.pomian.trainticketbooker.models;
 
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "stations")
 public class Station {
 
-    @jakarta.persistence.Id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
