@@ -16,6 +16,16 @@ public class StationConnection {
     private Integer timeWeight;
     private Integer priceWeight;
 
+    public StationConnection() {
+    }
+
+    public StationConnection(Station from, Station to, Integer timeWeight, Integer priceWeight) {
+        this.from = from;
+        this.to = to;
+        this.timeWeight = timeWeight;
+        this.priceWeight = priceWeight;
+    }
+
     public Long getId() {
         return id;
     }

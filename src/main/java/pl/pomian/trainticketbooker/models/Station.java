@@ -21,6 +21,13 @@ public class Station {
     @OneToMany(mappedBy = "from")
     private Set<StationConnection> connectedTo;
 
+    public Station() {
+    }
+
+    public Station(String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
