@@ -15,8 +15,8 @@ public class User {
     private byte[] password;
     private String email;
     @OneToMany
-    @JoinColumn(name = "fk_booking")
-    private Set<Ticket> bookings;
+    @JoinColumn(name = "fk_ticket")
+    private Set<Ticket> tickets;
 
     public Long getId() {
         return id;
@@ -48,5 +48,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Set<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(Set<Ticket> tickets) {
+        this.tickets = tickets;
     }
 }
