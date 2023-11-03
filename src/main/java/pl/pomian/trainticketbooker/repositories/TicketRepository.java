@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import pl.pomian.trainticketbooker.models.Ticket;
 
 @Repository
-public interface BookingRepository extends JpaRepository<Ticket, Long> {
+public interface TicketRepository extends JpaRepository<Ticket, Long> {
 }
