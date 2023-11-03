@@ -1,8 +1,10 @@
 package pl.pomian.trainticketbooker.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
 
 import java.math.BigDecimal;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -12,7 +14,8 @@ public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID bookingId;
+    @JdbcTypeCode(Types.VARCHAR)
+    private UUID ticketId;
     @ManyToOne
     private Station stationFrom;
     @ManyToOne
@@ -24,12 +27,35 @@ public class Ticket {
     private LocalDateTime travelTime;
     private LocalDateTime bookingTime;
 
-    public UUID getBookingId() {
-        return bookingId;
+    public Ticket() {
     }
 
-    public void setBookingId(UUID bookingId) {
-        this.bookingId = bookingId;
+    public Ticket(
+            Station stationFrom,
+            Station stationTo,
+            BigDecimal price,
+            Discount discount,
+            Short carriage,
+            Short seat,
+            LocalDateTime travelTime,
+            LocalDateTime bookingTime
+    ) {
+        this.stationFrom = stationFrom;
+        this.stationTo = stationTo;
+        this.price = price;
+        this.discount = discount;
+        this.carriage = carriage;
+        this.seat = seat;
+        this.travelTime = travelTime;
+        this.bookingTime = bookingTime;
+    }
+
+    public UUID getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(UUID ticketId) {
+        this.ticketId = ticketId;
     }
 
     public Station getStationFrom() {
