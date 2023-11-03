@@ -16,7 +16,7 @@ public class User {
     private String email;
     @OneToMany
     @JoinColumn(name = "fk_booking")
-    private Set<Booking> bookings;
+    private Set<Ticket> bookings;
 
     public Long getId() {
         return id;

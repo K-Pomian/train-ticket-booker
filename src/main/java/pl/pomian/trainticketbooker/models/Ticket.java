@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "bookings")
-public class Booking {
+@Table(name = "tickets")
+public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
