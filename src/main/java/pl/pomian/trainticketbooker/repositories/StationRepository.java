@@ -7,9 +7,9 @@ import pl.pomian.trainticketbooker.models.Station;
 @Repository
 public interface StationRepository extends JpaRepository<Station, Long> {
 
-    public Station findByName(String name);
+    Station findByName(String name);
 
-    public boolean existsByName(String name);
+    boolean existsByName(String name);
 
-    public void deleteByName(String name);
+    void deleteByName(String name);
 }

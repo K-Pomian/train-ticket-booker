@@ -9,15 +9,15 @@ import pl.pomian.trainticketbooker.models.StationConnection;
 @Repository
 public interface StationConnectionRepository extends JpaRepository<StationConnection, Long> {
 
-    public boolean existsByFrom_NameAndTo_Name(String fromStationName, String toStationName);
+    boolean existsByFrom_NameAndTo_Name(String fromStationName, String toStationName);
 
-    public StationConnection findByFrom_NameAndTo_Name(String fromStationName, String toStationName);
+    StationConnection findByFrom_NameAndTo_Name(String fromStationName, String toStationName);
 
-    public void deleteAllByTo_Name(String stationName);
+    void deleteAllByTo_Name(String stationName);
 
-    public void deleteAllByFrom_Name(String stationName);
+    void deleteAllByFrom_Name(String stationName);
 
-    public void deleteByFrom_NameAndTo_Name(String fromStationName, String toStationName);
+    void deleteByFrom_NameAndTo_Name(String fromStationName, String toStationName);
 
     @Modifying
     @Query(
@@ -27,7 +27,7 @@ public interface StationConnectionRepository extends JpaRepository<StationConnec
                     "WHERE from_id = (SELECT name FROM stations WHERE id = ?) " +
                     "AND to_id = (SELECT name FROM stations WHERE id = ?);"
     )
-    public void updateTimeWeightByFrom_NameAndTo_Name(Integer timeWeight, String fromStationId, String toStationId);
+    void updateTimeWeightByFrom_NameAndTo_Name(Integer timeWeight, String fromStationId, String toStationId);
 
     @Modifying
     @Query(
@@ -37,5 +37,5 @@ public interface StationConnectionRepository extends JpaRepository<StationConnec
                     "WHERE from_id = (SELECT name FROM stations WHERE id = ?) " +
                     "AND to_id = (SELECT name FROM stations WHERE id = ?);"
     )
-    public void updatePriceWeightByFrom_NameAndTo_Name(Integer priceWeight, String fromStationId, String toStationId);
+    void updatePriceWeightByFrom_NameAndTo_Name(Integer priceWeight, String fromStationId, String toStationId);
 }
