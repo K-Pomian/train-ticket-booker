@@ -14,13 +14,19 @@ public class StationConnection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne
     @JoinColumn(name = "from_station")
     private Station from;
+
     @ManyToOne
     @JoinColumn(name = "to_station")
     private Station to;
+
+    @Column(nullable = false)
     private Integer timeWeight;
+
+    @Column(nullable = false)
     private Integer priceWeight;
 
     public StationConnection() {

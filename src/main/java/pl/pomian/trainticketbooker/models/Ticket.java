@@ -16,15 +16,29 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(Types.VARCHAR)
     private UUID ticketId;
+
     @ManyToOne
     private Station stationFrom;
+
     @ManyToOne
     private Station stationTo;
+
+    @Column(nullable = false)
     private BigDecimal price;
+
+    @Column(nullable = false)
     private Discount discount;
+
+    @Column(nullable = false)
     private Short carriage;
+
+    @Column(nullable = false)
     private Short seat;
+
+    @Column(nullable = false)
     private LocalDateTime travelTime;
+
+    @Column(nullable = false)
     private LocalDateTime bookingTime;
 
     public Ticket() {

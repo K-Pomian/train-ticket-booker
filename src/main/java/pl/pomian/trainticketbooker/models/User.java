@@ -11,11 +11,18 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true, nullable = false)
     private String username;
+
+    @Column(nullable = false)
     private byte[] password;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
     @OneToMany
-    @JoinColumn(name = "fk_ticket")
+    @JoinColumn(name = "user_id")
     private Set<Ticket> tickets;
 
     public Long getId() {
