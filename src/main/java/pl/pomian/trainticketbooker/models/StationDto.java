@@ -6,7 +6,7 @@ public class StationDto {
 
     private String name;
 
-    public StationDto(String name) {
+    private StationDto(String name) {
         this.name = name;
     }
 
