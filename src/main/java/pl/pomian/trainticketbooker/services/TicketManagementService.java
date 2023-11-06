@@ -2,6 +2,7 @@ package pl.pomian.trainticketbooker.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.pomian.trainticketbooker.models.Discount;
 import pl.pomian.trainticketbooker.models.Station;
 import pl.pomian.trainticketbooker.models.Ticket;
@@ -36,6 +37,7 @@ public class TicketManagementService {
         return ticketRepository.findByTicketId(ticketId);
     }
 
+    @Transactional
     public void addTicket(
             long userId,
             String stationFromName,

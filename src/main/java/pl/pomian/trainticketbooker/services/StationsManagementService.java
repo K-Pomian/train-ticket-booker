@@ -3,6 +3,7 @@ package pl.pomian.trainticketbooker.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.pomian.trainticketbooker.models.Station;
 import pl.pomian.trainticketbooker.models.StationConnection;
 import pl.pomian.trainticketbooker.repositories.StationConnectionRepository;
@@ -34,6 +35,7 @@ public class StationsManagementService {
         return stationRepository.findByName(name);
     }
 
+    @Transactional
     public void addStation(String stationName, Set<StationConnection> connections) throws RuntimeException {
         if (stationRepository.existsByName(stationName)) {
             String message = "Station ".concat(stationName).concat(" already exists.");
@@ -61,6 +63,7 @@ public class StationsManagementService {
         stationConnectionRepository.save(connection);
     }
 
+    @Transactional
     public void removeStation(String stationName) {
         stationConnectionRepository.deleteAllByFrom_Name(stationName);
         stationConnectionRepository.deleteAllByTo_Name(stationName);
