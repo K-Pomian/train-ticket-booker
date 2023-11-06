@@ -3,15 +3,22 @@ package pl.pomian.trainticketbooker.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "station_connections")
+@Table(
+        name = "station_connections",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"from_station", "to_station"})
+        }
+)
 public class StationConnection {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
+    @JoinColumn(name = "from_station")
     private Station from;
     @ManyToOne
+    @JoinColumn(name = "to_station")
     private Station to;
     private Integer timeWeight;
     private Integer priceWeight;
