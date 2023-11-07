@@ -48,4 +48,13 @@ public class Station {
     public void setConnectedTo(Set<StationConnection> connectedTo) {
         this.connectedTo = connectedTo;
     }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", connectedTo=" + connectedTo +
+                '}';
+    }
 }
