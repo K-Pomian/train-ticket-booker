@@ -11,9 +11,6 @@ import pl.pomian.trainticketbooker.models.StationDto;
 import pl.pomian.trainticketbooker.repositories.StationRepository;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Configuration
 public class BeanConfig {
@@ -27,7 +24,7 @@ public class BeanConfig {
 
     @Bean
     public Graph<StationDto, DefaultWeightedEdge> getStationsTimeGraph() {
-        List<Station> stations = stationRepository.findAll();
+        List<Station> stations = stationRepository.findAllStationWithConnections();
         SimpleWeightedGraph<StationDto, DefaultWeightedEdge> graph =
                 new SimpleWeightedGraph<>(null, DefaultWeightedEdge::new);
 
@@ -38,7 +35,7 @@ public class BeanConfig {
             station.getConnectedTo().forEach(connection -> {
                 StationDto toStation = StationDto.fromStation(connection.getTo());
 
-                if (!graph.containsEdge(fromStation, toStation)) {
+                if (!graph.containsEdge(fromStation, toStation) && graph.containsVertex(toStation)) {
                     DefaultWeightedEdge edge = graph.addEdge(fromStation, toStation);
                     graph.setEdgeWeight(edge, connection.getTimeWeight().doubleValue());
                 }
@@ -50,7 +47,7 @@ public class BeanConfig {
 
     @Bean
     public Graph<StationDto, DefaultWeightedEdge> getStationsPriceGraph() {
-        List<Station> stations = stationRepository.findAll();
+        List<Station> stations = stationRepository.findAllStationWithConnections();
         SimpleWeightedGraph<StationDto, DefaultWeightedEdge> graph =
                 new SimpleWeightedGraph<>(null, DefaultWeightedEdge::new);
 
@@ -61,7 +58,7 @@ public class BeanConfig {
             station.getConnectedTo().forEach(connection -> {
                 StationDto toStation = StationDto.fromStation(connection.getTo());
 
-                if (!graph.containsEdge(fromStation, toStation)) {
+                if (!graph.containsEdge(fromStation, toStation) && graph.containsVertex(toStation)) {
                     DefaultWeightedEdge edge = graph.addEdge(fromStation, toStation);
                     graph.setEdgeWeight(edge, connection.getPriceWeight().doubleValue());
                 }
