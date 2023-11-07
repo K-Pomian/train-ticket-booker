@@ -20,7 +20,7 @@ VALUES
     (18, "Kielce"),
     (19, "Czestochowa");
 
-INSERT INTO station_connections (id, from_id, to_id, time_weight, price_weight)
+INSERT INTO station_connections (id, from_station, to_station, time_weight, price_weight)
 VALUES
     (1,  (SELECT id FROM stations WHERE name = "Cracow"),       (SELECT id FROM stations WHERE name = "Katowice"),      67,     25),	-- Cracow-Katowice
     (2,  (SELECT id FROM stations WHERE name = "Cracow"),       (SELECT id FROM stations WHERE name = "Zakopane"),      115,    36), 	-- Cracow-Zakopane
