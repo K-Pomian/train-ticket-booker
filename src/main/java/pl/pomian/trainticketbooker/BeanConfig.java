@@ -15,7 +15,7 @@ import java.util.List;
 @Configuration
 public class BeanConfig {
 
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     @Autowired
     public BeanConfig(StationRepository stationRepository) {

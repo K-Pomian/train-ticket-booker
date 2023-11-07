@@ -32,8 +32,8 @@ public class GraphPathFinderServiceTest {
     @DisplayName("Test getTimeWeighedPath function")
     void testGetTimeWeightedPath() {
         GraphPathFinderService.GraphPathFinderResult result = graphPathFinderService.getTimeWeightedPath(start, end);
-        assertEquals(265, result.getPathWeightSum(), () -> "Invalid price sum"); // time weight
-        assertEquals(102, result.getSupplementaryWeightSum(), () -> "Invalid time sum"); // price weight
+        assertEquals(265, result.getPathWeightSum(), "Invalid price sum"); // time weight
+        assertEquals(102, result.getSupplementaryWeightSum(), "Invalid time sum"); // price weight
 
         List<StationDto> actualList = result.getStationsOnThePath();
         List<StationDto> expectedList = List.of(
@@ -41,7 +41,7 @@ public class GraphPathFinderServiceTest {
                 StationDto.fromStation(new Station("Cracow")),
                 end
         );
-        assertEquals(actualList.size(), expectedList.size(), () -> "Invalid number of vertices");
+        assertEquals(actualList.size(), expectedList.size(), "Invalid number of vertices");
 
         for (int i = 0; i < expectedList.size() ; i++) {
             int temp = i;
@@ -60,8 +60,8 @@ public class GraphPathFinderServiceTest {
     @DisplayName("Test getPriceWeighedPath function")
     void testGetPriceWeightedPath() {
         GraphPathFinderService.GraphPathFinderResult result = graphPathFinderService.getPriceWeightedPath(start, end);
-        assertEquals(269, result.getSupplementaryWeightSum(), () -> "Invalid price sum"); // time weight
-        assertEquals(96, result.getPathWeightSum(), () -> "Invalid time sum"); // price weight
+        assertEquals(269, result.getSupplementaryWeightSum(), "Invalid price sum"); // time weight
+        assertEquals(96, result.getPathWeightSum(), "Invalid time sum"); // price weight
 
         List<StationDto> actualList = result.getStationsOnThePath();
         List<StationDto> expectedList = List.of(
@@ -69,7 +69,7 @@ public class GraphPathFinderServiceTest {
                 StationDto.fromStation(new Station("Poznan")),
                 end
         );
-        assertEquals(actualList.size(), expectedList.size(), () -> "Invalid number of vertices");
+        assertEquals(actualList.size(), expectedList.size(), "Invalid number of vertices");
 
         for (int i = 0; i < expectedList.size() ; i++) {
             int temp = i;

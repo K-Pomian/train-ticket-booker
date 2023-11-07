@@ -4,9 +4,9 @@ import java.util.Set;
 
 public class UserDto {
 
-    private long id;
-    private String username;
-    private Set<Ticket> tickets;
+    private final long id;
+    private final String username;
+    private final Set<Ticket> tickets;
 
     private UserDto(long id, String username, Set<Ticket> tickets) {
         this.id = id;
@@ -15,7 +15,7 @@ public class UserDto {
     }
 
     public static UserDto fromUser(User user) {
-        return new UserDto(user.getId().longValue(), user.getUsername(), user.getTickets());
+        return new UserDto(user.getId(), user.getUsername(), user.getTickets());
     }
 
     public long getId() {

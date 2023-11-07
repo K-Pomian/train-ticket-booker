@@ -18,9 +18,9 @@ import java.util.UUID;
 @Service
 public class TicketManagementService {
 
-    private TicketRepository ticketRepository;
-    private StationRepository stationRepository;
-    private UserRepository userRepository;
+    private final TicketRepository ticketRepository;
+    private final StationRepository stationRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public TicketManagementService(

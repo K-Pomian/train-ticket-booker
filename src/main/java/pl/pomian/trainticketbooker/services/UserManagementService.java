@@ -9,7 +9,7 @@ import pl.pomian.trainticketbooker.repositories.UserRepository;
 @Service
 public class UserManagementService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public UserManagementService(UserRepository userRepository) {

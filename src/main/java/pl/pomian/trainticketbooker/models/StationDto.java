@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class StationDto {
 
-    private String name;
+    private final String name;
 
     private StationDto(String name) {
         this.name = name;

@@ -15,8 +15,8 @@ import java.util.Set;
 @Service
 public class StationsManagementService {
 
-    private StationRepository stationRepository;
-    private StationConnectionRepository stationConnectionRepository;
+    private final StationRepository stationRepository;
+    private final StationConnectionRepository stationConnectionRepository;
 
     @Autowired
     public StationsManagementService(

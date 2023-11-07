@@ -67,9 +67,9 @@ public class GraphPathFinderService {
 
     public static class GraphPathFinderResult {
 
-        private int pathWeightSum;
-        private int supplementaryWeightSum;
-        private List<StationDto> stationsOnThePath;
+        private final int pathWeightSum;
+        private final int supplementaryWeightSum;
+        private final List<StationDto> stationsOnThePath;
 
         private GraphPathFinderResult(int pathWeightSum, int supplementaryWeightSum, List<StationDto> stationsOnThePath) {
             this.pathWeightSum = pathWeightSum;
