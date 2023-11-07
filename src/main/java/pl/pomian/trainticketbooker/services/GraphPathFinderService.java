@@ -14,8 +14,8 @@ import java.util.List;
 @Service
 public class GraphPathFinderService {
 
-    private Graph<StationDto, DefaultWeightedEdge> timeWeightedGraph;
-    private Graph<StationDto, DefaultWeightedEdge> priceWeightedGraph;
+    private final Graph<StationDto, DefaultWeightedEdge> timeWeightedGraph;
+    private final Graph<StationDto, DefaultWeightedEdge> priceWeightedGraph;
 
     @Autowired
     public GraphPathFinderService(
@@ -53,36 +53,36 @@ public class GraphPathFinderService {
             throw new RuntimeException(message);
         }
 
-        int timeSum = Double.valueOf(path.getWeight()).intValue();
-        int priceSum = 0;
+        int pathWeightSum = Double.valueOf(path.getWeight()).intValue();
+        int supplementaryWeightSum = 0;
 
         List<StationDto> stationsOnThePath = path.getVertexList();
         for (int i = 0; i < stationsOnThePath.size() - 1; i++) {
             DefaultWeightedEdge edge = supplementaryGraph.getEdge(stationsOnThePath.get(i), stationsOnThePath.get(i+1));
-            priceSum += Double.valueOf(supplementaryGraph.getEdgeWeight(edge)).intValue();
+            supplementaryWeightSum += Double.valueOf(supplementaryGraph.getEdgeWeight(edge)).intValue();
         }
 
-        return new GraphPathFinderResult(priceSum, timeSum, stationsOnThePath);
+        return new GraphPathFinderResult(pathWeightSum, supplementaryWeightSum, stationsOnThePath);
     }
 
     public static class GraphPathFinderResult {
 
-        private int priceSum;
-        private int timeSum;
+        private int pathWeightSum;
+        private int supplementaryWeightSum;
         private List<StationDto> stationsOnThePath;
 
-        private GraphPathFinderResult(int priceSum, int timeSum, List<StationDto> stationsOnThePath) {
-            this.priceSum = priceSum;
-            this.timeSum = timeSum;
+        private GraphPathFinderResult(int pathWeightSum, int supplementaryWeightSum, List<StationDto> stationsOnThePath) {
+            this.pathWeightSum = pathWeightSum;
+            this.supplementaryWeightSum = supplementaryWeightSum;
             this.stationsOnThePath = stationsOnThePath;
         }
 
-        public int getPriceSum() {
-            return priceSum;
+        public int getPathWeightSum() {
+            return pathWeightSum;
         }
 
-        public int getTimeSum() {
-            return timeSum;
+        public int getSupplementaryWeightSum() {
+            return supplementaryWeightSum;
         }
 
         public List<StationDto> getStationsOnThePath() {
