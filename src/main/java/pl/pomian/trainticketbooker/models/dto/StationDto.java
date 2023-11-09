@@ -1,4 +1,6 @@
-package pl.pomian.trainticketbooker.models;
+package pl.pomian.trainticketbooker.models.dto;
+
+import pl.pomian.trainticketbooker.models.Station;
 
 import java.util.Objects;
 
