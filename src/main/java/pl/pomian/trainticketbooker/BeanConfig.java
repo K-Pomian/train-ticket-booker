@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import pl.pomian.trainticketbooker.models.Station;
-import pl.pomian.trainticketbooker.models.StationDto;
+import pl.pomian.trainticketbooker.models.dto.StationDto;
 import pl.pomian.trainticketbooker.repositories.StationRepository;
 
 import java.util.List;

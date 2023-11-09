@@ -3,7 +3,7 @@ package pl.pomian.trainticketbooker.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.pomian.trainticketbooker.models.User;
-import pl.pomian.trainticketbooker.models.UserDto;
+import pl.pomian.trainticketbooker.models.dto.UserDto;
 import pl.pomian.trainticketbooker.repositories.UserRepository;
 
 @Service

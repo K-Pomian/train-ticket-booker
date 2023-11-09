@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import pl.pomian.trainticketbooker.models.Station;
-import pl.pomian.trainticketbooker.models.StationDto;
+import pl.pomian.trainticketbooker.models.dto.StationDto;
 import pl.pomian.trainticketbooker.services.GraphPathFinderService;
 
 import java.util.List;
