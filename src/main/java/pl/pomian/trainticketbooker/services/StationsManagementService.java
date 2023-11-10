@@ -6,6 +6,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.pomian.trainticketbooker.exceptions.StationAlreadyExistsException;
+import pl.pomian.trainticketbooker.exceptions.StationConnectionAlreadyExistsException;
 import pl.pomian.trainticketbooker.exceptions.StationNotFoundException;
 import pl.pomian.trainticketbooker.models.Station;
 import pl.pomian.trainticketbooker.models.StationConnection;
