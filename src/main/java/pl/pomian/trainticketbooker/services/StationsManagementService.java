@@ -15,6 +15,7 @@ import pl.pomian.trainticketbooker.models.dto.StationDto;
 import pl.pomian.trainticketbooker.repositories.StationConnectionRepository;
 import pl.pomian.trainticketbooker.repositories.StationRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -23,14 +24,17 @@ public class StationsManagementService {
 
     private final StationRepository stationRepository;
     private final StationConnectionRepository stationConnectionRepository;
+    private final TicketRepository ticketRepository;
 
     @Autowired
     public StationsManagementService(
             StationRepository stationRepository,
-            StationConnectionRepository stationConnectionRepository
+            StationConnectionRepository stationConnectionRepository,
+            TicketRepository ticketRepository
     ) {
         this.stationRepository = stationRepository;
         this.stationConnectionRepository = stationConnectionRepository;
+        this.ticketRepository = ticketRepository;
     }
 
     public long getStationCount() {
@@ -163,9 +167,30 @@ public class StationsManagementService {
     }
 
     @Transactional
-    public void removeStation(String stationName) {
+    public void removeStation(String stationName) throws StationNotFoundException {
+        if (!stationRepository.existsByName(stationName)) {
+            String message = "Station ".concat(stationName).concat(" not found.");
+            throw new StationNotFoundException(message);
+        }
+
         stationConnectionRepository.deleteAllByFrom_Name(stationName);
         stationConnectionRepository.deleteAllByTo_Name(stationName);
+
+        List<Ticket> tickets = new ArrayList<>(
+                ticketRepository.findAllByStationFrom_NameOrStationTo_NameFetchStationFromAndStationTo(
+                        stationName,
+                        stationName
+                )
+        );
+        tickets.forEach(ticket -> {
+            if (ticket.getStationFrom().getName().equals(stationName)) {
+                ticket.setStationFrom(null);
+            } else {
+                ticket.setStationTo(null);
+            }
+        });
+        ticketRepository.saveAll(tickets);
+
         stationRepository.deleteByName(stationName);
     }
 
