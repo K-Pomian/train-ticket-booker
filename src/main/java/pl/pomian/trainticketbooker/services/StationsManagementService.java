@@ -45,12 +45,24 @@ public class StationsManagementService {
                 .toList();
     }
 
-    public StationDto getStationByName(String name) {
-        return StationDto.fromStation(stationRepository.findByName(name));
+    public StationDto getStationByName(String name) throws StationNotFoundException {
+        Station station = stationRepository.findByName(name);
+
+        if (station == null) {
+            throw new StationNotFoundException("Station ".concat(name).concat(" not found."));
+        }
+
+        return StationDto.fromStation(station);
     }
 
-    public Pair<StationDto, List<StationConnectionDto>> getStationAndConnectionsByName(String name) {
+    public Pair<StationDto, List<StationConnectionDto>> getStationAndConnectionsByName(
+            String name
+    ) throws StationNotFoundException {
         Station station = stationRepository.findStationWithConnectionsByName(name);
+
+        if (station == null) {
+            throw new StationNotFoundException("Station ".concat(name).concat(" not found."));
+        }
 
         return new Pair<>(
                 StationDto.fromStation(station),
