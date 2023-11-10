@@ -20,7 +20,7 @@ public class TicketDto {
     private LocalDateTime travelTime;
     private LocalDateTime bookingTime;
 
-    private TicketDto(
+    public TicketDto(
             UUID ticketId,
             String stationFrom,
             String stationTo,

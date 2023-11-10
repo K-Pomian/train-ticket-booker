@@ -8,7 +8,7 @@ public class StationDto {
 
     private final String name;
 
-    private StationDto(String name) {
+    public StationDto(String name) {
         this.name = name;
     }
 

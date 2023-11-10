@@ -11,7 +11,7 @@ public class UserDto {
     private final String username;
     private final Set<Ticket> tickets;
 
-    private UserDto(long id, String username, Set<Ticket> tickets) {
+    public UserDto(long id, String username, Set<Ticket> tickets) {
         this.id = id;
         this.username = username;
         this.tickets = tickets;

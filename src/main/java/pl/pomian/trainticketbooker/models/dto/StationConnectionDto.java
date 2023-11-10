@@ -6,12 +6,12 @@ import java.util.Objects;
 
 public class StationConnectionDto {
 
-    private String fromStation;
-    private String toStation;
-    private int timeWeight;
-    private int priceWeight;
+    private final String fromStation;
+    private final String toStation;
+    private final int timeWeight;
+    private final int priceWeight;
 
-    private StationConnectionDto(String fromStation, String toStation, int timeWeight, int priceWeight) {
+    public StationConnectionDto(String fromStation, String toStation, int timeWeight, int priceWeight) {
         this.fromStation = fromStation;
         this.toStation = toStation;
         this.timeWeight = timeWeight;
