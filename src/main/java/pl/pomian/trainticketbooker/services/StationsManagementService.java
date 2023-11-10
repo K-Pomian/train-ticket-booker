@@ -74,18 +74,18 @@ public class StationsManagementService {
 
     @Transactional
     public void addStation(
-            @NonNull String stationName,
+            @NonNull StationDto station,
             @NonNull Set<StationConnectionDto> connections
     ) throws StationAlreadyExistsException {
-        if (stationRepository.existsByName(stationName)) {
-            String message = "Station ".concat(stationName).concat(" already exists.");
+        if (stationRepository.existsByName(station.getName())) {
+            String message = "Station ".concat(station.getName()).concat(" already exists.");
             throw new StationAlreadyExistsException(message);
         }
 
-        Station station = new Station(stationName);
-        Station savedStation = stationRepository.save(station);
+        Station stationToSave = new Station(station.getName());
+        Station savedStation = stationRepository.save(stationToSave);
 
-        List<StationConnection> persistedConnections = connections.stream().map(connection -> {
+        List<StationConnection> connectionsToSave = connections.stream().map(connection -> {
             Station toStation = stationRepository.findByName(connection.getToStation());
 
             if (toStation == null) {
@@ -100,7 +100,7 @@ public class StationsManagementService {
                     connection.getPriceWeight()
             );
         }).toList();
-        stationConnectionRepository.saveAll(persistedConnections);
+        stationConnectionRepository.saveAll(connectionsToSave);
     }
 
     public void addConnection(@NonNull StationConnection connection) throws RuntimeException {
