@@ -33,6 +33,22 @@ public class StationsManagementService {
         this.stationConnectionRepository = stationConnectionRepository;
     }
 
+    public long getStationCount() {
+        return stationRepository.count();
+    }
+
+    public long getStationConnectionsCountByStationName(String stationName) {
+        return stationConnectionRepository.countByFrom_Name(stationName);
+    }
+
+    public boolean stationExists(String stationName) {
+        return stationRepository.existsByName(stationName);
+    }
+
+    public boolean stationConnectionExists(String fromStation, String toStation) {
+        return stationConnectionRepository.existsByFrom_NameAndTo_Name(fromStation, toStation);
+    }
+
     public List<StationDto> getAllStations() {
         return stationRepository.findAll().stream().map(StationDto::fromStation).toList();
     }
