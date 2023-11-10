@@ -9,6 +9,8 @@ import pl.pomian.trainticketbooker.models.StationConnection;
 @Repository
 public interface StationConnectionRepository extends JpaRepository<StationConnection, Long> {
 
+    long countByFrom_Name(String from);
+
     boolean existsByFrom_NameAndTo_Name(String fromStationName, String toStationName);
 
     StationConnection findByFrom_NameAndTo_Name(String fromStationName, String toStationName);
