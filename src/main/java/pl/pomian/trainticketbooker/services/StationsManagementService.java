@@ -103,9 +103,11 @@ public class StationsManagementService {
         stationConnectionRepository.saveAll(connectionsToSave);
     }
 
-    public void addConnection(@NonNull StationConnection connection) throws RuntimeException {
-        String fromStationName = connection.getFrom().getName();
-        String toStationName = connection.getTo().getName();
+    public void addConnection(
+            @NonNull StationConnectionDto connection
+    ) throws StationConnectionAlreadyExistsException, StationAlreadyExistsException {
+        String fromStationName = connection.getFromStation();
+        String toStationName = connection.getToStation();
 
         if (stationConnectionRepository.existsByFrom_NameAndTo_Name(fromStationName, toStationName)) {
             String message = "Connection from "
@@ -113,10 +115,34 @@ public class StationsManagementService {
                     .concat(" to ")
                     .concat(toStationName)
                     .concat(" already exists");
-            throw new RuntimeException(message);
+            throw new StationConnectionAlreadyExistsException(message);
         }
 
-        stationConnectionRepository.save(connection);
+        Station fromStation = stationRepository.findByName(connection.getFromStation());
+        if (fromStation == null) {
+            String message = "Station ".concat(connection.getFromStation()).concat(" not found");
+            throw new StationNotFoundException(message);
+        }
+
+        Station toStation = stationRepository.findByName(connection.getToStation());
+        if (toStation == null) {
+            String message = "Station ".concat(connection.getToStation()).concat(" not found");
+            throw new StationNotFoundException(message);
+        }
+
+        StationConnection connectionToSave = new StationConnection(
+                fromStation,
+                toStation,
+                connection.getTimeWeight(),
+                connection.getPriceWeight()
+        );
+        StationConnection reversedConnection = new StationConnection(
+                toStation,
+                fromStation,
+                connection.getTimeWeight(),
+                connection.getPriceWeight()
+        );
+        stationConnectionRepository.saveAll(Set.of(connectionToSave, reversedConnection));
     }
 
     @Transactional
