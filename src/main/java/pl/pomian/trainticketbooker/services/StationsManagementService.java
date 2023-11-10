@@ -85,14 +85,21 @@ public class StationsManagementService {
         Station station = new Station(stationName);
         Station savedStation = stationRepository.save(station);
 
-        List<StationConnection> persistedConnections = connections.stream().map(connection ->
-                new StationConnection(
-                        savedStation,
-                        stationRepository.findByName(connection.getToStation()),
-                        connection.getTimeWeight(),
-                        connection.getPriceWeight()
-                )
-        ).toList();
+        List<StationConnection> persistedConnections = connections.stream().map(connection -> {
+            Station toStation = stationRepository.findByName(connection.getToStation());
+
+            if (toStation == null) {
+                String message = "Station ".concat(connection.getToStation()).concat(" not found");
+                throw new StationNotFoundException(message);
+            }
+
+            return new StationConnection(
+                    savedStation,
+                    toStation,
+                    connection.getTimeWeight(),
+                    connection.getPriceWeight()
+            );
+        }).toList();
         stationConnectionRepository.saveAll(persistedConnections);
     }
 
