@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.pomian.trainticketbooker.exceptions.StationAlreadyExistsException;
+import pl.pomian.trainticketbooker.exceptions.StationNotFoundException;
 import pl.pomian.trainticketbooker.models.Station;
 import pl.pomian.trainticketbooker.models.StationConnection;
 import pl.pomian.trainticketbooker.models.dto.StationConnectionDto;
@@ -71,15 +73,27 @@ public class StationsManagementService {
     }
 
     @Transactional
-    public void addStation(String stationName, Set<StationConnection> connections) throws RuntimeException {
+    public void addStation(
+            @NonNull String stationName,
+            @NonNull Set<StationConnectionDto> connections
+    ) throws StationAlreadyExistsException {
         if (stationRepository.existsByName(stationName)) {
             String message = "Station ".concat(stationName).concat(" already exists.");
-            throw new RuntimeException(message);
+            throw new StationAlreadyExistsException(message);
         }
 
         Station station = new Station(stationName);
-        stationRepository.save(station);
-        stationConnectionRepository.saveAll(connections);
+        Station savedStation = stationRepository.save(station);
+
+        List<StationConnection> persistedConnections = connections.stream().map(connection ->
+                new StationConnection(
+                        savedStation,
+                        stationRepository.findByName(connection.getToStation()),
+                        connection.getTimeWeight(),
+                        connection.getPriceWeight()
+                )
+        ).toList();
+        stationConnectionRepository.saveAll(persistedConnections);
     }
 
     public void addConnection(@NonNull StationConnection connection) throws RuntimeException {
