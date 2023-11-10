@@ -10,10 +10,12 @@ import pl.pomian.trainticketbooker.exceptions.StationConnectionAlreadyExistsExce
 import pl.pomian.trainticketbooker.exceptions.StationNotFoundException;
 import pl.pomian.trainticketbooker.models.Station;
 import pl.pomian.trainticketbooker.models.StationConnection;
+import pl.pomian.trainticketbooker.models.Ticket;
 import pl.pomian.trainticketbooker.models.dto.StationConnectionDto;
 import pl.pomian.trainticketbooker.models.dto.StationDto;
 import pl.pomian.trainticketbooker.repositories.StationConnectionRepository;
 import pl.pomian.trainticketbooker.repositories.StationRepository;
+import pl.pomian.trainticketbooker.repositories.TicketRepository;
 
 import java.util.ArrayList;
 import java.util.List;
