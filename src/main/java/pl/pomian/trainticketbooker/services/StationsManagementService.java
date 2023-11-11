@@ -212,27 +212,57 @@ public class StationsManagementService {
         stationConnectionRepository.deleteByFrom_NameAndTo_Name(toStation, fromStation);
     }
 
+    @Transactional
     public void updateConnectionTimeWeight(
-            Integer timeWeight,
-            String fromStationName,
-            String toStationName
-    ) {
+            String fromStation,
+            String toStation,
+            Integer timeWeight
+    ) throws StationConnectionNotFoundException {
+        if (!stationConnectionRepository.existsByFrom_NameAndTo_Name(fromStation, toStation)) {
+            String message = "Connection between "
+                    .concat(fromStation)
+                    .concat(" and ")
+                    .concat(toStation)
+                    .concat(" not found.");
+            throw new StationConnectionNotFoundException(message);
+        }
+
         stationConnectionRepository.updateTimeWeightByFrom_NameAndTo_Name(
                 timeWeight,
-                fromStationName,
-                toStationName
+                fromStation,
+                toStation
+        );
+        stationConnectionRepository.updateTimeWeightByFrom_NameAndTo_Name(
+                timeWeight,
+                toStation,
+                fromStation
         );
     }
 
+    @Transactional
     public void updateConnectionPriceWeight(
-            Integer priceWeight,
-            String fromStationName,
-            String toStationName
+            String fromStation,
+            String toStation,
+            Integer priceWeight
     ) {
-        stationConnectionRepository.updateTimeWeightByFrom_NameAndTo_Name(
+        if (!stationConnectionRepository.existsByFrom_NameAndTo_Name(fromStation, toStation)) {
+            String message = "Connection between "
+                    .concat(fromStation)
+                    .concat(" and ")
+                    .concat(toStation)
+                    .concat(" not found.");
+            throw new StationConnectionNotFoundException(message);
+        }
+
+        stationConnectionRepository.updatePriceWeightByFrom_NameAndTo_Name(
                 priceWeight,
-                fromStationName,
-                toStationName
+                fromStation,
+                toStation
+        );
+        stationConnectionRepository.updatePriceWeightByFrom_NameAndTo_Name(
+                priceWeight,
+                toStation,
+                fromStation
         );
     }
 }
