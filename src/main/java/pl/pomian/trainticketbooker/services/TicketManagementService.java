@@ -87,7 +87,6 @@ public class TicketManagementService {
                 travelTime,
                 LocalDateTime.now()
         );
-
         ticketRepository.save(ticket);
 
         User user = userRepository
