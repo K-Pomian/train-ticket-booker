@@ -26,8 +26,8 @@ public interface StationConnectionRepository extends JpaRepository<StationConnec
             nativeQuery = true,
             value = "UPDATE station_connections " +
                     "SET time_weight = ? " +
-                    "WHERE from_station = (SELECT name FROM stations WHERE id = ?) " +
-                    "AND to_station = (SELECT name FROM stations WHERE id = ?);"
+                    "WHERE from_station = (SELECT stations.id FROM stations WHERE name = ?) " +
+                    "AND to_station = (SELECT stations.id FROM stations WHERE name = ?);"
     )
     void updateTimeWeightByFrom_NameAndTo_Name(Integer timeWeight, String fromStationId, String toStationId);
 
@@ -36,8 +36,8 @@ public interface StationConnectionRepository extends JpaRepository<StationConnec
             nativeQuery = true,
             value = "UPDATE station_connections " +
                     "SET price_weight = ? " +
-                    "WHERE from_station = (SELECT name FROM stations WHERE id = ?) " +
-                    "AND to_station = (SELECT name FROM stations WHERE id = ?);"
+                    "WHERE from_station = (SELECT stations.id FROM stations WHERE name = ?) " +
+                    "AND to_station = (SELECT stations.id FROM stations WHERE name = ?);"
     )
     void updatePriceWeightByFrom_NameAndTo_Name(Integer priceWeight, String fromStationId, String toStationId);
 }
