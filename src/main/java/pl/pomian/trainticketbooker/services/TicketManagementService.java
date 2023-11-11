@@ -64,9 +64,19 @@ public class TicketManagementService {
             short carriage,
             short seat,
             LocalDateTime travelTime
-    ) {
+    ) throws StationNotFoundException, UserNotFoundException {
         Station stationFrom = stationRepository.findByName(stationFromName);
+        if (stationFrom == null) {
+            String message = "Station ".concat(stationFromName).concat(" not found.");
+            throw new StationNotFoundException(message);
+        }
+
         Station stationTo = stationRepository.findByName(stationToName);
+        if (stationTo == null) {
+            String message = "Station ".concat(stationToName).concat(" not found.");
+            throw new StationNotFoundException(message);
+        }
+
         Ticket ticket = new Ticket(
                 stationFrom,
                 stationTo,
@@ -80,7 +90,15 @@ public class TicketManagementService {
 
         ticketRepository.save(ticket);
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository
+                .findById(userId)
+                .orElseThrow(
+                        () -> new UserNotFoundException(
+                                "User with id "
+                                .concat(String.valueOf(userId))
+                                .concat(" not found.")
+                        )
+                );
         user.getTickets().add(ticket);
         userRepository.save(user);
     }
