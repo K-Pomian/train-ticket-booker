@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.pomian.trainticketbooker.exceptions.StationAlreadyExistsException;
 import pl.pomian.trainticketbooker.exceptions.StationConnectionAlreadyExistsException;
+import pl.pomian.trainticketbooker.exceptions.StationConnectionNotFoundException;
 import pl.pomian.trainticketbooker.exceptions.StationNotFoundException;
 import pl.pomian.trainticketbooker.models.Station;
 import pl.pomian.trainticketbooker.models.StationConnection;
@@ -196,8 +197,19 @@ public class StationsManagementService {
         stationRepository.deleteByName(stationName);
     }
 
-    public void removeConnection(String fromStation, String toStation) {
+    @Transactional
+    public void removeConnection(String fromStation, String toStation) throws StationConnectionNotFoundException {
+        if (!stationConnectionRepository.existsByFrom_NameAndTo_Name(fromStation, toStation)) {
+            String message = "Connection between "
+                    .concat(fromStation)
+                    .concat(" and ")
+                    .concat(toStation)
+                    .concat(" not found.");
+            throw new StationConnectionNotFoundException(message);
+        }
+
         stationConnectionRepository.deleteByFrom_NameAndTo_Name(fromStation, toStation);
+        stationConnectionRepository.deleteByFrom_NameAndTo_Name(toStation, fromStation);
     }
 
     public void updateConnectionTimeWeight(
