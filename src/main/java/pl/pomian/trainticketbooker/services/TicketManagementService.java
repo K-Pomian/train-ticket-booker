@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.pomian.trainticketbooker.exceptions.StationNotFoundException;
 import pl.pomian.trainticketbooker.exceptions.TicketNotFoundException;
+import pl.pomian.trainticketbooker.exceptions.UserNotFoundException;
 import pl.pomian.trainticketbooker.models.Discount;
 import pl.pomian.trainticketbooker.models.Station;
 import pl.pomian.trainticketbooker.models.Ticket;
@@ -16,6 +18,7 @@ import pl.pomian.trainticketbooker.repositories.UserRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -45,6 +48,10 @@ public class TicketManagementService {
         }
 
         return TicketDto.fromTicket(ticket);
+    }
+
+    public List<TicketDto> getTicketsByUserId(@NonNull long userId) {
+        return ticketRepository.findAllByUserId(userId).stream().map(TicketDto::fromTicket).toList();
     }
 
     @Transactional
