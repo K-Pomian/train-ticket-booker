@@ -8,8 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import pl.pomian.trainticketbooker.exceptions.StationAlreadyExistsException;
+import pl.pomian.trainticketbooker.exceptions.StationConnectionAlreadyExistsException;
+import pl.pomian.trainticketbooker.exceptions.StationConnectionNotFoundException;
+import pl.pomian.trainticketbooker.exceptions.StationNotFoundException;
+import pl.pomian.trainticketbooker.models.Ticket;
 import pl.pomian.trainticketbooker.models.dto.StationConnectionDto;
 import pl.pomian.trainticketbooker.models.dto.StationDto;
+import pl.pomian.trainticketbooker.repositories.TicketRepository;
 import pl.pomian.trainticketbooker.services.StationsManagementService;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,6 +31,38 @@ public class StationManagementServiceTest {
 
     @Autowired
     StationsManagementService stationsManagementService;
+
+    @Autowired
+    TicketRepository ticketRepository;
+
+    @Test
+    @DisplayName("Test getStationCount function")
+    void testGetStationCount() {
+        assertEquals(5, stationsManagementService.getStationCount());
+    }
+
+    @Test
+    @DisplayName("Test getStationConnectionsCountByStationName function")
+    void testGetStationConnectionsCountByStationName() {
+        assertEquals(2, stationsManagementService.getStationConnectionsCountByStationName("Cracow"));
+    }
+
+    @Test
+    @DisplayName("Test stationExists function")
+    void testStationExists() {
+        assertTrue(stationsManagementService.stationExists("Cracow"));
+        assertFalse(stationsManagementService.stationExists("Zakopane"));
+    }
+
+    @Test
+    @DisplayName("Test stationConnectionExists function")
+    void testStationConnectionExists() {
+        assertTrue(stationsManagementService.stationConnectionExists("Cracow", "Wroclaw"));
+        assertFalse(stationsManagementService.stationConnectionExists("Cracow", "Gdansk"));
+        assertFalse(stationsManagementService.stationConnectionExists("Cracow", "Zakopane"));
+        assertFalse(stationsManagementService.stationConnectionExists("Zakopane", "Cracow"));
+        assertFalse(stationsManagementService.stationConnectionExists("Zakopane", "Nowy Sacz"));
+    }
 
     @Test
     @DisplayName("Test getAllStations function")
@@ -165,6 +203,391 @@ public class StationManagementServiceTest {
                 "Poznan",
                 159,
                 51
+        );
+    }
+
+    @Test
+    @DisplayName("Test getStationByName function - successful")
+    void testGetStationByNameSuccessful() {
+        StationDto result = stationsManagementService.getStationByName("Warsaw");
+        assertEquals("Warsaw", result.getName());
+    }
+
+    @Test
+    @DisplayName("Test getStationByName function - queried station not found")
+    void testGetStationByNameNotFound() {
+        assertThrows(StationNotFoundException.class, () -> stationsManagementService.getStationByName("Zakopane"));
+    }
+
+    @Test
+    @DisplayName("Test getStationAndConnectionsByName function - successful")
+    void testGetStationAndConnectionsByName() {
+        Pair<StationDto, List<StationConnectionDto>> result =
+                stationsManagementService.getStationAndConnectionsByName("Warsaw");
+
+        assertEquals("Warsaw", result.getValue0().getName());
+        assertEquals(3, result.getValue1().size());
+
+        List<StationConnectionDto> connections = new ArrayList<>(result.getValue1());
+        connections.sort(Comparator.comparing(StationConnectionDto::getToStation));
+        assertStationConnectionDtoInstance(
+                connections.get(0),
+                "Warsaw",
+                "Cracow",
+                130,
+                50
+        );
+        assertStationConnectionDtoInstance(
+                connections.get(1),
+                "Warsaw",
+                "Gdansk",
+                100,
+                42
+        );
+        assertStationConnectionDtoInstance(
+                connections.get(2),
+                "Warsaw",
+                "Poznan",
+                110,
+                45
+        );
+    }
+
+    @Test
+    @DisplayName("Test getStationAndConnectionsByName function - queried station not found")
+    void testGetStationAndConnectionsByNameNotFound() {
+        assertThrows(
+                StationNotFoundException.class,
+                () -> stationsManagementService.getStationAndConnectionsByName("Zakopane")
+        );
+    }
+
+    @Test
+    @DisplayName("Test addStation function - successful")
+    void testAddStationSuccessful() {
+        StationDto newStation = new StationDto("Zakopane");
+
+        StationConnectionDto connection1 = new StationConnectionDto(
+                newStation.getName(),
+                "Cracow",
+                94,
+                26
+        );
+        StationConnectionDto connection2 = new StationConnectionDto(
+                newStation.getName(),
+                "Wroclaw",
+                256,
+                61
+        );
+        Set<StationConnectionDto> connections = Set.of(connection1, connection2);
+        stationsManagementService.addStation(newStation, connections);
+
+        Pair<StationDto, List<StationConnectionDto>> actual =
+                stationsManagementService.getStationAndConnectionsByName(newStation.getName());
+
+        assertEquals("Zakopane", actual.getValue0().getName());
+        assertEquals(2, actual.getValue1().size());
+
+        List<StationConnectionDto> actualConnections = new ArrayList<>(actual.getValue1());
+        actualConnections.sort(Comparator.comparing(StationConnectionDto::getToStation));
+        assertStationConnectionDtoInstance(
+                actualConnections.get(0),
+                "Zakopane",
+                "Cracow",
+                94,
+                26
+        );
+        assertStationConnectionDtoInstance(
+                actualConnections.get(1),
+                "Zakopane",
+                "Wroclaw",
+                256,
+                61
+        );
+    }
+
+    @Test
+    @DisplayName("Test addStation function - added station already exists")
+    void testAddStationAlreadyExists() {
+        assertThrows(
+                StationAlreadyExistsException.class,
+                () -> stationsManagementService.addStation(new StationDto("Cracow"), Set.of())
+        );
+    }
+
+    @Test
+    @DisplayName("Test addStation function - toStation in a connection does not exist")
+    void testAddStationToStationDoesNotExist() {
+        StationDto stationName = new StationDto("Zakopane");
+        StationConnectionDto connection = new StationConnectionDto(
+                stationName.getName(),
+                "Nowy Sacz",
+                153,
+                50
+        );
+        Set<StationConnectionDto> connections = Set.of(connection);
+
+        assertThrows(
+                StationNotFoundException.class,
+                () -> stationsManagementService.addStation(stationName, connections)
+        );
+    }
+
+    @Test
+    @DisplayName("Test addConnection function - successful")
+    void testAddConnectionSuccessful() {
+        StationConnectionDto connection = new StationConnectionDto(
+                "Wroclaw",
+                "Gdansk",
+                278,
+                68
+        );
+        stationsManagementService.addConnection(connection);
+
+        Pair<StationDto, List<StationConnectionDto>> wroclaw =
+                stationsManagementService.getStationAndConnectionsByName("Wroclaw");
+        assertTrue(wroclaw.getValue1().contains(connection));
+
+        Pair<StationDto, List<StationConnectionDto>> gdansk =
+                stationsManagementService.getStationAndConnectionsByName("Gdansk");
+        assertTrue(gdansk.getValue1().contains(
+                new StationConnectionDto(
+                        "Gdansk",
+                        "Wroclaw",
+                        278,
+                        68
+                )
+        ));
+    }
+
+    @Test
+    @DisplayName("Test addConnection function - connection already exists")
+    void testAddConnectionAlreadyExists() {
+        StationConnectionDto connection = new StationConnectionDto(
+                "Cracow",
+                "Wroclaw",
+                50,
+                153
+        );
+        assertThrows(
+                StationConnectionAlreadyExistsException.class,
+                () -> stationsManagementService.addConnection(connection)
+        );
+    }
+
+    @Test
+    @DisplayName("Test addConnection function - fromStation does not exist")
+    void testAddConnectionFromStationDoesNotExist() {
+        StationConnectionDto connection = new StationConnectionDto(
+                "Zakopane",
+                "Wroclaw",
+                50,
+                153
+        );
+        assertThrows(
+                StationNotFoundException.class,
+                () -> stationsManagementService.addConnection(connection)
+        );
+    }
+
+    @Test
+    @DisplayName("Test addConnection function - toStation does not exist")
+    void testAddConnectionToStationDoesNotExist() {
+        StationConnectionDto connection = new StationConnectionDto(
+                "Cracow",
+                "Zakopane",
+                50,
+                153
+        );
+        assertThrows(
+                StationNotFoundException.class,
+                () -> stationsManagementService.addConnection(connection)
+        );
+    }
+
+    @Test
+    @DisplayName("Test removeStation function - successful")
+    void testRemoveStationSuccessful() {
+        List<UUID> uuids = ticketRepository.findAll().stream().filter(ticket ->
+                ticket.getStationTo().getName().equals("Cracow") ||
+                        ticket.getStationFrom().getName().equals("Cracow")
+        ).map(Ticket::getTicketId).toList();
+
+        assertTrue(stationsManagementService.stationExists("Cracow"));
+        assertEquals(2, stationsManagementService.getStationConnectionsCountByStationName("Cracow"));
+        assertEquals(3, stationsManagementService.getStationConnectionsCountByStationName("Warsaw"));
+        assertEquals(2, stationsManagementService.getStationConnectionsCountByStationName("Wroclaw"));
+
+        stationsManagementService.removeStation("Cracow");
+        assertFalse(stationsManagementService.stationExists("Cracow"));
+        assertEquals(0, stationsManagementService.getStationConnectionsCountByStationName("Cracow"));
+        assertEquals(2, stationsManagementService.getStationConnectionsCountByStationName("Warsaw"));
+        assertEquals(1, stationsManagementService.getStationConnectionsCountByStationName("Wroclaw"));
+
+        List<Ticket> tickets =
+                ticketRepository.findAll().stream().filter(ticket -> uuids.contains(ticket.getTicketId())).toList();
+        tickets.forEach(ticket -> assertTrue(ticket.getStationFrom() == null || ticket.getStationTo() == null));
+    }
+
+    @Test
+    @DisplayName("Test removeStation function - station not found")
+    void testRemoveStationNotFound() {
+        assertThrows(
+                StationNotFoundException.class,
+                () -> stationsManagementService.removeStation("Zakopane")
+        );
+    }
+
+    @Test
+    @DisplayName("Test removeConnection - successful")
+    void testRemoveConnectionSuccessful() {
+        stationsManagementService.removeConnection("Cracow", "Wroclaw");
+
+        Pair<StationDto, List<StationConnectionDto>> cracow =
+                stationsManagementService.getStationAndConnectionsByName("Cracow");
+        assertTrue(cracow.getValue1().stream().noneMatch(connection -> connection.getToStation().equals("Wroclaw")));
+
+        Pair<StationDto, List<StationConnectionDto>> wroclaw =
+                stationsManagementService.getStationAndConnectionsByName("Wroclaw");
+        assertTrue(wroclaw.getValue1().stream().noneMatch(connection -> connection.getToStation().equals("Wroclaw")));
+    }
+
+    @Test
+    @DisplayName("Test removeConnection - connection not found")
+    void testRemoveConnectionNotFound() {
+        assertThrows(
+                StationConnectionNotFoundException.class,
+                () -> stationsManagementService.removeConnection("Cracow", "Zakopane")
+        );
+        assertThrows(
+                StationConnectionNotFoundException.class,
+                () -> stationsManagementService.removeConnection("Rzeszow", "Warsaw")
+        );
+        assertThrows(
+                StationConnectionNotFoundException.class,
+                () -> stationsManagementService.removeConnection("Zielona Gora", "Opole")
+        );
+    }
+
+    @Test
+    @DisplayName("Test updateConnectionTimeWeight - successful")
+    void testUpdateConnectionTimeWeightSuccessful() {
+        stationsManagementService.updateConnectionTimeWeight("Cracow", "Warsaw", 145);
+
+        Pair<StationDto, List<StationConnectionDto>> cracow =
+                stationsManagementService.getStationAndConnectionsByName("Cracow");
+        assertEquals(
+                145,
+                cracow
+                        .getValue1()
+                        .stream()
+                        .filter(connection -> connection.getToStation().equals("Warsaw"))
+                        .findFirst()
+                        .orElseThrow(StationNotFoundException::new)
+                        .getTimeWeight()
+        );
+
+        Pair<StationDto, List<StationConnectionDto>> warsaw =
+                stationsManagementService.getStationAndConnectionsByName("Warsaw");
+        assertEquals(
+                145,
+                warsaw
+                        .getValue1()
+                        .stream()
+                        .filter(connection -> connection.getToStation().equals("Cracow"))
+                        .findFirst()
+                        .orElseThrow(StationNotFoundException::new)
+                        .getTimeWeight()
+        );
+    }
+
+    @Test
+    @DisplayName("Test updateConnectionTimeWeight - connection not found")
+    void testUpdateConnectionTimeWeightConnectionNotFound() {
+        assertThrows(
+                StationConnectionNotFoundException.class,
+                () -> stationsManagementService.updateConnectionTimeWeight(
+                        "Cracow",
+                        "Zakopane",
+                        0
+                )
+        );
+        assertThrows(
+                StationConnectionNotFoundException.class,
+                () -> stationsManagementService.updateConnectionTimeWeight(
+                        "Rzeszow",
+                        "Warsaw",
+                        0
+                )
+        );
+        assertThrows(
+                StationConnectionNotFoundException.class,
+                () -> stationsManagementService.updateConnectionTimeWeight(
+                        "Nowy Sacz",
+                        "Zielona Gora",
+                        0
+                )
+        );
+    }
+
+    @Test
+    @DisplayName("Test updateConnectionPriceWeight function - successful")
+    void testUpdateConnectionPriceWeight() {
+        stationsManagementService.updateConnectionPriceWeight("Cracow", "Wroclaw", 66);
+
+        Pair<StationDto, List<StationConnectionDto>> cracow =
+                stationsManagementService.getStationAndConnectionsByName("Cracow");
+        assertEquals(
+                66,
+                cracow
+                        .getValue1()
+                        .stream()
+                        .filter(connection -> connection.getToStation().equals("Wroclaw"))
+                        .findFirst()
+                        .orElseThrow(StationNotFoundException::new)
+                        .getPriceWeight()
+        );
+
+        Pair<StationDto, List<StationConnectionDto>> wroclaw =
+                stationsManagementService.getStationAndConnectionsByName("Wroclaw");
+        assertEquals(
+                66,
+                wroclaw
+                        .getValue1()
+                        .stream()
+                        .filter(connection -> connection.getToStation().equals("Cracow"))
+                        .findFirst()
+                        .orElseThrow(StationNotFoundException::new)
+                        .getPriceWeight()
+        );
+    }
+
+    @Test
+    @DisplayName("Test updateConnectionPriceWeight function - connection not found")
+    void testUpdateConnectionPriceWeightConnectionNotFound() {
+        assertThrows(
+                StationConnectionNotFoundException.class,
+                () -> stationsManagementService.updateConnectionPriceWeight(
+                        "Cracow",
+                        "Zakopane",
+                        0
+                )
+        );
+        assertThrows(
+                StationConnectionNotFoundException.class,
+                () -> stationsManagementService.updateConnectionPriceWeight(
+                        "Rzeszow",
+                        "Warsaw",
+                        0
+                )
+        );
+        assertThrows(
+                StationConnectionNotFoundException.class,
+                () -> stationsManagementService.updateConnectionPriceWeight(
+                        "Nowy Sacz",
+                        "Zielona Gora",
+                        0
+                )
         );
     }
 
