@@ -15,4 +15,11 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     List<Ticket> findAllByStationFrom_NameOrStationTo_NameFetchStationFromAndStationTo(String stationFromName, String stationToName);
 
     Ticket findByTicketId(UUID ticketId);
+
+    @Query(
+            nativeQuery = true,
+            value = "SELECT * FROM tickets " +
+                    "WHERE user_id = ?"
+    )
+    List<Ticket> findAllByUserId(Long userId);
 }
